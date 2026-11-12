@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meleesha Farm Shop</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%231c7a48' d='M24 3C14.5 3 7 15 7 27a17 17 0 0 0 34 0C41 15 33.5 3 24 3z'/%3E%3Cpath fill='none' stroke='%23fff' stroke-width='4.6' stroke-linecap='round' stroke-linejoin='round' d='M15 35V21l9 9 9-9v14'/%3E%3Ccircle fill='%23f5b12e' cx='24' cy='15.5' r='3.6'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Yaldevi:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: light, airy storefront. Sticky search bar, category chips, product cards, and a live order panel. */
+:root{
+  --bg:#f6f8f4; --surface:#ffffff; --ink:#14241a; --muted:#5d6c61; --line:#e2e8df;
+  --green:#1c7a48; --on-green:#ffffff; --green-soft:#e4f3ea; --yolk:#f5b12e; --yolk-soft:#fdf1d6; --warm-soft:#fbe9e1; --warm:#c8552d;
+  --shadow:0 1px 2px rgba(20,36,26,.05),0 8px 24px rgba(20,36,26,.06);
+  --font:"Yaldevi","Noto Sans Sinhala","Nirmala UI","Iskoola Pota",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1511; --surface:#17211b; --ink:#e8efe9; --muted:#9db0a2; --line:#27352c;
+    --green:#3fbf7c; --on-green:#06200f; --green-soft:#17382649; --yolk:#f5b93f; --yolk-soft:#3a2f12; --warm-soft:#3a211a; --warm:#f08a63;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1511; --surface:#17211b; --ink:#e8efe9; --muted:#9db0a2; --line:#27352c;
+  --green:#3fbf7c; --on-green:#06200f; --green-soft:#17382649; --yolk:#f5b93f; --yolk-soft:#3a2f12; --warm-soft:#3a211a; --warm:#f08a63;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:1.02rem;line-height:1.65}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--yolk);outline-offset:2px}
+.wrap{max-width:1140px;margin:0 auto;padding:0 20px}
+h1,h2,h3,p{margin:0}
+h1,h2{text-wrap:balance;line-height:1.25}
+
+/* header */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:14px;padding-top:12px;padding-bottom:12px}
+.brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);white-space:nowrap}
+.mark{width:40px;height:40px;flex:none}
+.m-egg{fill:var(--green)}
+.m-m{fill:none;stroke:var(--on-green);stroke-width:4.6;stroke-linecap:round;stroke-linejoin:round}
+.m-yolk{fill:var(--yolk)}
+.word{display:flex;flex-direction:column;line-height:1}
+.word b{font-size:1.32rem;font-weight:700;letter-spacing:-.01em}
+.word small{font-size:.62rem;font-weight:700;letter-spacing:.34em;color:var(--green);margin-top:4px}
+.search{flex:1;position:relative;max-width:440px;margin-left:auto}
+.search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--muted)}
+.search input{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:10px 16px 10px 42px}
+.search input::placeholder{color:var(--muted)}
+.lang{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px;flex:none}
+.lang button{border:0;background:transparent;border-radius:999px;padding:5px 12px;font-size:.88rem;font-weight:600;cursor:pointer;color:var(--muted)}
+.lang button[aria-pressed="true"]{background:var(--green);color:var(--on-green)}
+.cartbtn{position:relative;flex:none;border:0;background:var(--ink);color:var(--bg);border-radius:999px;padding:9px 16px;font-weight:600;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:8px}
+.cartbtn b{background:var(--yolk);color:#2a1c00;border-radius:999px;min-width:22px;height:22px;display:grid;place-items:center;font-size:.82rem;padding:0 6px;font-variant-numeric:tabular-nums}
+
+/* hero */
+.hero{padding:44px 0 28px}
+.hero .wrap{display:grid;grid-template-columns:1.2fr .8fr;gap:36px;align-items:center}
+.pill{display:inline-block;background:var(--green-soft);color:var(--green);font-weight:600;font-size:.88rem;border-radius:999px;padding:4px 14px;margin-bottom:14px}
+.hero h1{font-size:clamp(2.2rem,6vw,3.7rem);font-weight:700;letter-spacing:-.01em}
+.hero h1 em{font-style:normal;color:var(--green)}
+.hero p{color:var(--muted);font-size:1.12rem;max-width:32em;margin:14px 0 22px}
+.cta{display:flex;gap:10px;flex-wrap:wrap}
+.btn{border-radius:12px;padding:11px 20px;font-weight:600;border:1px solid transparent;cursor:pointer;text-decoration:none;display:inline-block;text-align:center}
+.btn.primary{background:var(--green);color:var(--on-green)}
+.btn.ghost{background:var(--surface);border-color:var(--line);color:var(--ink)}
+.art{background:var(--surface);border:1px solid var(--line);border-radius:28px;padding:22px;box-shadow:var(--shadow);max-width:380px;width:100%;justify-self:end}
+.tray{display:grid;grid-template-columns:repeat(6,1fr);gap:9px}
+.tray b{aspect-ratio:1;border-radius:50%;background:var(--bg);display:grid;place-items:center}
+.tray b i{width:70%;height:86%;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:#d49a6a;animation:set .5s both}
+.tray b:nth-child(3n) i{background:#ecc7a2}
+.tray b:nth-child(7n) i{background:var(--yolk)}
+@keyframes set{from{transform:translateY(-6px) scale(.92)}to{transform:none}}
+
+/* shop */
+.shop{padding:20px 0 56px}
+.shop-h{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.shop-h h2{font-size:1.7rem;font-weight:700}
+.shop-h p{color:var(--muted);font-size:.95rem}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.chips button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 16px;font-weight:600;font-size:.95rem;cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.layout{display:grid;grid-template-columns:1fr 330px;gap:24px;align-items:start}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px;transition:box-shadow .2s,transform .2s}
+.card:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
+.card.has{border-color:var(--green)}
+.ico{height:84px;border-radius:12px;display:grid;place-items:center}
+.ico svg{width:38px;height:38px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.ico.eggs{background:var(--yolk-soft);color:#b47a08}
+.ico.chicken{background:var(--warm-soft);color:var(--warm)}
+.ico.grocery{background:var(--green-soft);color:var(--green)}
+.card h3{font-size:1.02rem;font-weight:600;line-height:1.35}
+.card .un{color:var(--muted);font-size:.86rem}
+.card .act{margin-top:auto}
+.add{width:100%;border:1px solid var(--green);background:transparent;color:var(--green);border-radius:10px;padding:8px;font-weight:600;cursor:pointer}
+.add:hover{background:var(--green);color:var(--on-green)}
+.step{display:flex;align-items:center;justify-content:space-between;background:var(--green);color:var(--on-green);border-radius:10px;padding:3px}
+.step button{width:34px;height:34px;border:0;border-radius:8px;background:transparent;color:inherit;font-size:1.2rem;font-weight:700;cursor:pointer;line-height:1}
+.step button:hover{background:rgba(255,255,255,.2)}
+.step output{font-weight:700;font-variant-numeric:tabular-nums}
+.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:36px 0}
+
+/* order panel */
+.order{position:sticky;top:84px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--shadow)}
+.order h2{font-size:1.25rem;font-weight:700;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.order h2 button{border:0;background:none;color:var(--muted);font-size:.88rem;font-weight:500;cursor:pointer;text-decoration:underline}
+.lines{list-style:none;margin:0 0 14px;padding:0}
+.lines li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line)}
+.lines li span:last-child{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.lines small{display:block;color:var(--muted);font-size:.82rem}
+.hint{color:var(--muted);font-size:.92rem;margin-bottom:14px}
+.order .btn{width:100%}
+.order .btn[disabled]{opacity:.45;cursor:not-allowed}
+.msg{font-size:.9rem;font-weight:600;color:var(--green);min-height:1.5em;margin-top:8px}
+.order textarea{width:100%;min-height:120px;margin-top:8px;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:10px;font-size:.92rem}
+.order textarea[hidden]{display:none}
+
+/* contact */
+.contact{padding:8px 0 64px}
+.contact h2{font-size:1.7rem;font-weight:700;margin-bottom:16px}
+.cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.cc{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;gap:14px;align-items:flex-start}
+.cc svg{width:22px;height:22px;flex:none;fill:none;stroke:var(--green);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;margin-top:3px}
+.cc h3{font-size:.95rem;font-weight:600;color:var(--muted)}
+.num{font-weight:700;font-size:1.1rem;color:var(--ink);text-decoration:none;font-variant-numeric:tabular-nums}
+.num:hover{color:var(--green)}
+.todo{display:inline-block;border:1.5px dashed var(--yolk);border-radius:8px;padding:1px 10px;font-size:.92rem;margin-top:4px}
+footer{border-top:1px solid var(--line);padding:18px 0 28px;color:var(--muted);font-size:.9rem}
+
+
+/* how it works */
+.how{padding:8px 0 28px}
+.how ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;counter-reset:s}
+.how li{counter-increment:s;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px 18px;display:flex;gap:14px;align-items:flex-start}
+.how li::before{content:counter(s);flex:none;width:32px;height:32px;border-radius:50%;background:var(--green-soft);color:var(--green);font-weight:700;display:grid;place-items:center}
+.how h3{font-size:1.02rem;font-weight:600}
+.how p{color:var(--muted);font-size:.92rem}
+
+/* order extras */
+.fields{display:grid;gap:8px;margin-bottom:12px}
+.fields input{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:9px 12px;font-size:.95rem}
+.fields input::placeholder{color:var(--muted)}
+.btn.wa{background:#1fa855;color:#fff;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px}
+.btn.wa svg{width:20px;height:20px;fill:currentColor}
+.btn.wa[aria-disabled="true"]{opacity:.45;pointer-events:none}
+.usual{display:flex;flex-direction:column;gap:4px;margin-top:10px;border-top:1px solid var(--line);padding-top:10px}
+.usual button{border:0;background:none;color:var(--green);font-weight:600;font-size:.9rem;cursor:pointer;text-align:left;padding:2px 0}
+.usual button[hidden]{display:none}
+
+/* wholesale */
+.whole{padding:0 0 40px}
+.whole .box{background:var(--green);color:var(--on-green);border-radius:24px;padding:26px 28px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.whole h2{font-size:1.45rem;font-weight:700}
+.whole p{opacity:.85}
+.whole .btn{background:var(--yolk);color:#2a1c00}
+
+/* toast + theme */
+.toast{position:fixed;top:78px;left:50%;transform:translate(-50%,-12px);background:var(--ink);color:var(--bg);border-radius:999px;padding:8px 18px;font-weight:600;font-size:.92rem;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:40;max-width:calc(100% - 32px);text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.theme{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 16px;font-weight:600;font-size:.9rem;cursor:pointer}
+
+/* mobile bottom bar */
+.bar{display:none}
+@media (max-width:860px){
+  .hero .wrap,.layout{grid-template-columns:1fr}
+  .art{display:none}
+  .order{position:static}
+  .cgrid,.how ol{grid-template-columns:1fr}
+  .toast{top:128px}
+  .top .wrap{flex-wrap:wrap}
+  .search{order:5;flex-basis:100%;max-width:none}
+  .cartbtn span{display:none}
+  .brand{margin-right:auto}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  html{scroll-padding-top:130px}
+  .bar.show{display:flex;position:fixed;left:16px;right:16px;bottom:16px;z-index:30;background:var(--ink);color:var(--bg);border-radius:16px;padding:12px 18px;justify-content:space-between;align-items:center;text-decoration:none;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  body.pad{padding-bottom:84px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#home" aria-label="Meleesha Farm Shop"><svg class="mark" viewBox="0 0 48 48" aria-hidden="true"><path class="m-egg" d="M24 3C14.5 3 7 15 7 27a17 17 0 0 0 34 0C41 15 33.5 3 24 3z"/><path class="m-m" d="M15 35V21l9 9 9-9v14"/><circle class="m-yolk" cx="24" cy="15.5" r="3.6"/></svg><span class="word"><b>Meleesha</b><small>FARM SHOP</small></span></a>
+    <label class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+      <input id="q" type="search" autocomplete="off" aria-label="Search">
+    </label>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" id="lang-si" aria-pressed="true">සිං</button>
+      <button type="button" id="lang-en" aria-pressed="false">EN</button>
+    </div>
+    <a class="cartbtn" href="#order"><span data-si="ඇණවුම" data-en="Order"></span><b id="count">0</b></a>
+  </div>
+</header>
+
+<div class="hero" id="home">
+  <div class="wrap">
+    <div>
+      <span class="pill" data-si="බිත්තර · කුකුළු මස් · සිල්ලර බඩු" data-en="Eggs · Chicken · Groceries"></span>
+      <h1><span data-si="ගෙදරට ඕන හැම දෙයක්ම" data-en="Everything your home needs,"></span> <em data-si="එකම තැනකින්" data-en="in one shop"></em></h1>
+      <p data-si="බඩු තෝරන්න, ඇණවුම් ලැයිස්තුව හදන්න, අපිට එවන්න. ඒ තරම් ලේසියි." data-en="Pick your items, build an order list and send it to us. It is that easy."></p>
+      <div class="cta">
+        <a class="btn primary" href="#shop" data-si="බඩු බලන්න" data-en="Browse items"></a>
+        <a class="btn ghost" href="#contact" data-si="අමතන්න" data-en="Contact us"></a>
+      </div>
+    </div>
+    <div class="art" aria-hidden="true"><div class="tray" id="tray"></div></div>
+  </div>
+</div>
+
+<section class="how" aria-label="How it works">
+  <div class="wrap">
+    <ol>
+      <li><div><h3 data-si="බඩු තෝරන්න" data-en="Pick your items"></h3><p data-si="ඕන බඩු ළඟ “එකතු කරන්න” ඔබන්න." data-en="Press “Add” on what you need."></p></div></li>
+      <li><div><h3 data-si="ඇණවුම එවන්න" data-en="Send the order"></h3><p data-si="WhatsApp එකෙන් එවන්න, නැත්නම් කොපි කරන්න." data-en="Send it on WhatsApp, or copy it."></p></div></li>
+      <li><div><h3 data-si="අපි මිල දන්වනවා" data-en="We reply with the price"></h3><p data-si="අද මිල සහ බඩු තියෙනවද කියලා අපි කියනවා." data-en="We tell you today's price and what is in stock."></p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="shop" id="shop">
+  <div class="wrap">
+    <div class="shop-h">
+      <h2 data-si="අපේ බඩු" data-en="Our items"></h2>
+      <p data-si="මිල දවසින් දවස වෙනස් වෙනවා. අද මිල අපෙන් අහන්න." data-en="Prices change daily. Please ask us for today's price."></p>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Category"></div>
+    <div class="layout">
+      <div class="grid" id="grid"></div>
+      <aside class="order" id="order">
+        <h2><span data-si="ඔබේ ඇණවුම" data-en="Your order"></span><button type="button" id="clear" data-si="හිස් කරන්න" data-en="Clear"></button></h2>
+        <ul class="lines" id="lines"></ul>
+        <p class="hint" id="hint"></p>
+        <div class="fields">
+          <input id="cust-name" type="text" autocomplete="name" maxlength="60" data-ph-si="ඔබේ නම" data-ph-en="Your name">
+          <input id="cust-note" type="text" autocomplete="off" maxlength="140" data-ph-si="සටහනක් (උදා: හවස 5ට ගන්න එනවා)" data-ph-en="Note (e.g. I will collect at 5 pm)">
+        </div>
+        <a class="btn wa" id="wa" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 2a8 8 0 1 1-4.1 14.9l-.4-.2-2.6.7.7-2.5-.3-.4A8 8 0 0 1 12 4zm-3 3.8c-.2 0-.5.1-.7.4-.3.3-1 1-1 2.3s1 2.7 1.1 2.9c.2.2 2 3.1 4.9 4.2 2.4.9 2.9.7 3.4.7.5-.1 1.6-.7 1.9-1.3.2-.6.2-1.2.1-1.3l-.5-.3-1.8-.9c-.3-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1-.3-.1-1.1-.4-2.1-1.3-.8-.7-1.3-1.5-1.4-1.8-.2-.3 0-.4.1-.5l.4-.5.2-.4v-.4l-.8-1.9c-.2-.5-.4-.5-.6-.5z"/></svg><span data-si="WhatsApp එකෙන් එවන්න" data-en="Send on WhatsApp"></span></a>
+        <button class="btn ghost" type="button" id="copy" data-si="ඇණවුම කොපි කරන්න" data-en="Copy order"></button>
+        <p class="msg" id="msg" aria-live="polite"></p>
+        <textarea id="fallback" readonly hidden aria-label="Order text"></textarea>
+        <div class="usual">
+          <button type="button" id="save-usual" data-si="මේක මගේ සුපුරුදු ලැයිස්තුව විදිහට තියාගන්න" data-en="Save this as my usual list"></button>
+          <button type="button" id="load-usual" data-si="මගේ සුපුරුදු ලැයිස්තුව දාන්න" data-en="Load my usual list"></button>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="whole">
+  <div class="wrap"><div class="box">
+    <div><h2 data-si="තොග වශයෙන් බිත්තර ඕනද?" data-en="Need eggs in bulk?"></h2><p data-si="කඩවලට, බේකරිවලට සහ හෝටල්වලට තොග මිලට දෙනවා." data-en="Wholesale prices for shops, bakeries and hotels."></p></div>
+    <a class="btn" id="wa-whole" target="_blank" rel="noopener" data-si="තොග මිල අහන්න" data-en="Ask for wholesale price"></a>
+  </div></div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap">
+    <h2 data-si="අමතන්න, කඩේට එන්න" data-en="Call us or visit"></h2>
+    <div class="cgrid">
+      <div class="cc"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"></path></svg><div><h3>WhatsApp</h3><a class="num" href="https://wa.me/94764997730" target="_blank" rel="noopener">+94 76 499 7730</a></div></div>
+      <div class="cc"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.3-7-11a7 7 0 0 1 14 0c0 4.7-7 11-7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg><div><h3 data-si="ලිපිනය" data-en="Address"></h3><span class="todo" data-si="කඩේ ලිපිනය මෙතනට" data-en="Shop address goes here"></span></div></div>
+      <div class="cc"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><h3 data-si="විවෘත වේලාවන්" data-en="Opening hours"></h3><span class="todo" data-si="විවෘත වේලාවන් මෙතනට" data-en="Opening hours go here"></span></div></div>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap"><span class="brand"><svg class="mark" viewBox="0 0 48 48" aria-hidden="true"><path class="m-egg" d="M24 3C14.5 3 7 15 7 27a17 17 0 0 0 34 0C41 15 33.5 3 24 3z"/><path class="m-m" d="M15 35V21l9 9 9-9v14"/><circle class="m-yolk" cx="24" cy="15.5" r="3.6"/></svg><span class="word"><b>Meleesha</b><small>FARM SHOP</small></span></span><button class="theme" type="button" id="theme"></button></div></footer>
+<div class="toast" id="toast" role="status"></div>
+<a class="bar" id="bar" href="#order"><span id="bar-t"></span><span data-si="ඇණවුම බලන්න" data-en="View order"></span></a>
+
+<script>
+var ICON={
+ egg:'<path d="M12 3c-3.5 0-6 5-6 9.5a6 6 0 0 0 12 0C18 8 15.5 3 12 3z"/>',
+ tray:'<rect x="3" y="6" width="18" height="12" rx="3"/><circle cx="8" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="16" cy="12" r="1.8"/>',
+ leg:'<path d="M15 3.5a5.5 5.5 0 0 1 3.900 9.400c-1.700 1.700-4.200 2-6.200 1L9.5 17l.4 1.600a1.600 1.600 0 0 1-2.700 1.5 1.600 1.600 0 0 1-3.300-.9 1.600 1.600 0 0 1 1.5-2.700L7 17l3.100-3.200c-1-2-.7-4.5 1-6.200A5.5 5.5 0 0 1 15 3.5z"/>',
+ sack:'<path d="M8.5 3h7L14 6c3 1.5 5 4.800 5 8.5 0 4-3 6.5-7 6.5s-7-2.5-7-6.5C5 10.800 7 7.5 10 6z"/><path d="M10 6h4"/>',
+ bottle:'<path d="M10 2.5h4V6l2 3v10.5a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V9l2-3z"/><path d="M8 13h8"/>',
+ leaf:'<path d="M5 19C5 11 10 5 19 5c0 9-6 14-14 14z"/><path d="M5 19l8-8"/>',
+ pack:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M5 8h14M9.5 13h5"/>'
+};
+var CATS=[{id:"all",si:"සියල්ල",en:"All"},{id:"eggs",si:"බිත්තර",en:"Eggs"},{id:"chicken",si:"කුකුළු මස්",en:"Chicken"},{id:"grocery",si:"සිල්ලර බඩු",en:"Groceries"}];
+var ITEMS=[
+ {id:"egg",c:"eggs",i:"egg",si:"බිත්තර",en:"Eggs",usi:"එකක්",uen:"each"},
+ {id:"tray",c:"eggs",i:"tray",si:"බිත්තර තැටිය",en:"Egg tray",usi:"තැටියක්",uen:"tray"},
+ {id:"whole",c:"chicken",i:"leg",si:"සම්පූර්ණ කුකුළා",en:"Whole chicken",usi:"කිලෝ",uen:"kg"},
+ {id:"curry",c:"chicken",i:"leg",si:"කරි කෑලි කුකුළු මස්",en:"Curry-cut chicken",usi:"කිලෝ",uen:"kg"},
+ {id:"rice",c:"grocery",i:"sack",si:"හාල්",en:"Rice",usi:"කිලෝ",uen:"kg"},
+ {id:"dhal",c:"grocery",i:"sack",si:"පරිප්පු",en:"Dhal",usi:"කිලෝ",uen:"kg"},
+ {id:"sugar",c:"grocery",i:"sack",si:"සීනි",en:"Sugar",usi:"කිලෝ",uen:"kg"},
+ {id:"flour",c:"grocery",i:"sack",si:"තිරිඟු පිටි",en:"Wheat flour",usi:"කිලෝ",uen:"kg"},
+ {id:"oil",c:"grocery",i:"bottle",si:"පොල්තෙල්",en:"Coconut oil",usi:"බෝතල්",uen:"bottle"},
+ {id:"tea",c:"grocery",i:"leaf",si:"තේ කොළ",en:"Tea",usi:"පැකට්",uen:"packet"},
+ {id:"milk",c:"grocery",i:"pack",si:"කිරිපිටි",en:"Milk powder",usi:"පැකට්",uen:"packet"},
+ {id:"spice",c:"grocery",i:"pack",si:"කුළුබඩු",en:"Spices",usi:"පැකට්",uen:"packet"}
+];
+var T={
+ si:{search:"බඩු හොයන්න",add:"+ එකතු කරන්න",less:"අඩු කරන්න",more:"වැඩි කරන්න",none:"ඒ නමින් බඩුවක් හම්බුණේ නෑ.",
+     hint0:"තාම බඩු තෝරලා නෑ. බඩුවක් ළඟ තියෙන “එකතු කරන්න” ඔබන්න.",hint1:"මේක තාම අපිට එවලා නෑ. පහළ බොත්තමෙන් එවන්න.",added:"එකතු වුණා: ",saved:"සුපුරුදු ලැයිස්තුව තියාගත්තා.",name:"නම: ",note:"සටහන: ",dark:"අඳුරු පෙනුම",light:"එළිය පෙනුම",whole:"Meleesha Farm Shop: තොග බිත්තර මිල ගැන දැනගන්න කැමතියි.",
+     head:"Meleesha Farm Shop ඇණවුම:",ok:"කොපි වුණා. දැන් පණිවිඩයක අලවන්න.",fail:"කොපි වුණේ නෑ. පහළ තියෙන ලැයිස්තුව තෝරලා කොපි කරන්න.",items:function(n){return "බඩු "+n+"ක් තෝරලා";}},
+ en:{search:"Search items",add:"+ Add",less:"Less",more:"More",none:"No item found with that name.",
+     hint0:"Nothing picked yet. Press “Add” on an item.",hint1:"This has not been sent to us yet. Use the button below.",added:"Added: ",saved:"Usual list saved.",name:"Name: ",note:"Note: ",dark:"Dark mode",light:"Light mode",whole:"Meleesha Farm Shop: I would like to know your wholesale egg prices.",
+     head:"Order for Meleesha Farm Shop:",ok:"Copied. Now paste it into a message.",fail:"Could not copy. Select the list below and copy it.",items:function(n){return n+(n===1?" item picked":" items picked");}}
+};
+var SHOP_WHATSAPP="94764997730"; /* shop WhatsApp number with country code, digits only, e.g. 94771234567 */
+var lang="si",cat="all",query="",qty={};
+try{var l=localStorage.getItem("mfs-lang");if(l==="en"||l==="si")lang=l;
+    var s=JSON.parse(localStorage.getItem("mfs-qty")||"{}");ITEMS.forEach(function(it){var n=Number(s[it.id]);if(n>0&&n<1000)qty[it.id]=Math.max(st(it),Math.round(n/st(it))*st(it));});}catch(e){}
+function $(id){return document.getElementById(id);}
+function esc(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");}
+function unit(it){return lang==="si"?it.usi:it.uen;}
+function st(it){return it.uen==="kg"?0.5:1;}
+function wa(text){return "https://wa.me/"+SHOP_WHATSAPP+"?text="+encodeURIComponent(text);}
+function isDark(){var t=document.documentElement.getAttribute("data-theme");return t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches;}
+var toastT;function toast(m){var t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove("on");},1600);}
+function save(){try{localStorage.setItem("mfs-qty",JSON.stringify(qty));}catch(e){}}
+
+function renderChips(){
+  $("chips").innerHTML=CATS.map(function(c){return '<button type="button" data-c="'+c.id+'" aria-pressed="'+(cat===c.id)+'">'+esc(c[lang])+'</button>';}).join("");
+}
+function renderGrid(){
+  var q=query.trim().toLowerCase();
+  var list=ITEMS.filter(function(it){return (cat==="all"||it.c===cat)&&(!q||it.si.indexOf(q)>-1||it.en.toLowerCase().indexOf(q)>-1);});
+  $("grid").innerHTML=list.length?list.map(function(it){
+    var n=qty[it.id]||0;
+    var act=n?'<div class="step"><button type="button" data-id="'+it.id+'" data-d="-1" aria-label="'+T[lang].less+'">−</button><output>'+n+'</output><button type="button" data-id="'+it.id+'" data-d="1" aria-label="'+T[lang].more+'">+</button></div>'
+             :'<button type="button" class="add" data-id="'+it.id+'" data-d="1">'+T[lang].add+'</button>';
+    return '<article class="card'+(n?' has':'')+'"><div class="ico '+it.c+'"><svg viewBox="0 0 24 24">'+ICON[it.i]+'</svg></div><div><h3>'+esc(it[lang])+'</h3><span class="un">'+esc(unit(it))+'</span></div><div class="act">'+act+'</div></article>';
+  }).join(""):'<p class="empty">'+T[lang].none+'</p>';
+}
+function picked(){return ITEMS.filter(function(it){return qty[it.id]>0;});}
+function orderText(){var t=T[lang].head+"\n"+picked().map(function(it){return "- "+it[lang]+" ("+unit(it)+") × "+qty[it.id];}).join("\n");
+  var nm=$("cust-name").value.trim(),nt=$("cust-note").value.trim();if(nm)t+="\n"+T[lang].name+nm;if(nt)t+="\n"+T[lang].note+nt;return t;}
+function link(){var n=picked().length,a=$("wa");if(n){a.href=wa(orderText());a.setAttribute("aria-disabled","false");}else{a.removeAttribute("href");a.setAttribute("aria-disabled","true");}}
+function hasUsual(){try{return !!localStorage.getItem("mfs-usual");}catch(e){return false;}}
+function renderOrder(){
+  var p=picked(),n=p.length;
+  $("lines").innerHTML=p.map(function(it){return '<li><span>'+esc(it[lang])+'<small>'+esc(unit(it))+'</small></span><span>× '+qty[it.id]+'</span></li>';}).join("");
+  $("hint").textContent=n?T[lang].hint1:T[lang].hint0;
+  $("copy").disabled=!n;$("clear").hidden=!n;
+  $("count").textContent=n;$("msg").textContent="";$("fallback").hidden=true;
+  link();$("save-usual").hidden=!n;$("load-usual").hidden=!hasUsual();
+  $("bar-t").textContent=T[lang].items(n);
+  $("bar").classList.toggle("show",n>0);document.body.classList.toggle("pad",n>0);
+}
+function setLang(v){
+  lang=v;document.documentElement.lang=v;
+  try{localStorage.setItem("mfs-lang",v);}catch(e){}
+  document.querySelectorAll("[data-si]").forEach(function(el){el.textContent=el.getAttribute("data-"+v);});
+  $("lang-si").setAttribute("aria-pressed",v==="si");$("lang-en").setAttribute("aria-pressed",v==="en");
+  document.querySelectorAll("[data-ph-si]").forEach(function(el){el.placeholder=el.getAttribute("data-ph-"+v);el.setAttribute("aria-label",el.placeholder);});
+  $("wa-whole").href=wa(T[v].whole);$("theme").textContent=isDark()?T[v].light:T[v].dark;
+  $("q").placeholder=T[v].search;$("q").setAttribute("aria-label",T[v].search);
+  renderChips();renderGrid();renderOrder();
+}
+$("lang-si").onclick=function(){setLang("si");};
+$("lang-en").onclick=function(){setLang("en");};
+$("q").addEventListener("input",function(e){query=e.target.value;renderGrid();});
+$("chips").addEventListener("click",function(e){var b=e.target.closest("button[data-c]");if(!b)return;cat=b.getAttribute("data-c");renderChips();renderGrid();});
+$("grid").addEventListener("click",function(e){
+  var b=e.target.closest("button[data-id]");if(!b)return;
+  var id=b.getAttribute("data-id"),d=Number(b.getAttribute("data-d"));
+  var it=ITEMS.filter(function(x){return x.id===id;})[0];
+  qty[id]=Math.max(0,Math.min(999,(qty[id]||0)+d*st(it)));save();renderGrid();renderOrder();
+  if(d>0)toast(T[lang].added+it[lang]+" × "+qty[id]);
+  var f=$("grid").querySelector('button[data-id="'+id+'"][data-d="'+d+'"]')||$("grid").querySelector('button[data-id="'+id+'"]');if(f)f.focus();
+});
+$("clear").onclick=function(){qty={};save();renderGrid();renderOrder();};
+$("copy").onclick=function(){
+  var text=orderText(),fb=$("fallback"),msg=$("msg");
+  function fail(){fb.value=text;fb.hidden=false;fb.focus();fb.select();msg.textContent=T[lang].fail;}
+  try{navigator.clipboard.writeText(text).then(function(){msg.textContent=T[lang].ok;},fail);}catch(e){fail();}
+};
+$("cust-name").addEventListener("input",link);$("cust-note").addEventListener("input",link);
+$("save-usual").onclick=function(){try{localStorage.setItem("mfs-usual",JSON.stringify(qty));}catch(e){}renderOrder();$("msg").textContent=T[lang].saved;};
+$("load-usual").onclick=function(){try{var u=JSON.parse(localStorage.getItem("mfs-usual")||"{}");qty={};ITEMS.forEach(function(it){var n=Number(u[it.id]);if(n>0&&n<1000)qty[it.id]=Math.max(st(it),Math.round(n/st(it))*st(it));});}catch(e){}save();renderGrid();renderOrder();};
+$("theme").onclick=function(){var d=!isDark();document.documentElement.setAttribute("data-theme",d?"dark":"light");try{localStorage.setItem("mfs-theme",d?"dark":"light");}catch(e){}$("theme").textContent=d?T[lang].light:T[lang].dark;};
+try{var tm=localStorage.getItem("mfs-theme");if(tm==="dark"||tm==="light")document.documentElement.setAttribute("data-theme",tm);}catch(e){}
+var th="";for(var i=0;i<30;i++)th+='<b><i style="animation-delay:'+(i*25)+'ms"></i></b>';
+$("tray").innerHTML=th;
+setLang(lang);
+</script>
+</body>
+</html>
